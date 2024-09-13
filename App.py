@@ -5,33 +5,38 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 import altair as alt
+import zipfile
+import requests
+import re
 
 
-# Defining filepath locally
-file_path = '/Users/markushenriksson/Desktop/Data/Python/Projects/ds-master/data/assignments_datasets/KIVA'
+url1 = requests.get('https://github.com/aaubs/ds-master/raw/main/data/assignments_datasets/KIVA/kiva_loans_part_0.csv.zip')
+url2 = requests.get('https://github.com/aaubs/ds-master/raw/main/data/assignments_datasets/KIVA/kiva_loans_part_1.csv.zip')
+url3 = requests.get('https://github.com/aaubs/ds-master/raw/main/data/assignments_datasets/KIVA/kiva_loans_part_2.csv.zip')
 
-# Changing to the correct file and changing to the the working directory
-os.chdir(file_path)
+    # filesaving
+with open("kiva_loans_part_0.csv.zip", "wb") as file:
+     file.write(url1.content)
+with open("kiva_loans_part_1.csv.zip", "wb") as file:
+      file.write(url2.content)
+with open("kiva_loans_part_2.csv.zip", "wb") as file:
+     file.write(url3.content)
 
-# Loading datasets
-try: #Try function to do specific command with exceptions
-    # Different parts of the dataset
-    df_part_0 = pd.read_csv('kiva_loans_part_0.csv')
-    df_part_1 = pd.read_csv('kiva_loans_part_1.csv')
-    df_part_2 = pd.read_csv('kiva_loans_part_2.csv')
+    # unzip
+with zipfile.ZipFile("kiva_loans_part_0.csv.zip", 'r') as zip_ref:
+      zip_ref.extractall()
+with zipfile.ZipFile("kiva_loans_part_1.csv.zip", 'r') as zip_ref:
+      zip_ref.extractall()
+with zipfile.ZipFile("kiva_loans_part_2.csv.zip", 'r') as zip_ref:
+     zip_ref.extractall()
 
-    # Concatonating the subdatasets
-    df_combined = pd.concat([df_part_0, df_part_1, df_part_2], ignore_index=True)
+    #partial datasets
+df_part1 = pd.read_csv("kiva_loans_part_0.csv")
+df_part2 = pd.read_csv("kiva_loans_part_1.csv")
+df_part3 = pd.read_csv("kiva_loans_part_2.csv")
 
-    # Displaying dataset header 
-    st.title("KIVA Loans Dataset Visualization")
-    st.write("### Data Preview")
-    st.dataframe(df_combined.head())
-
-except FileNotFoundError as e:
-    st.error(f"File not found: {e}")
-except Exception as e:
-    st.error(f"An error occurred: {e}")
+    # pd.concat
+df_combined = pd.concat([df_part1, df_part2, df_part3])
 
 # Introduction
 
